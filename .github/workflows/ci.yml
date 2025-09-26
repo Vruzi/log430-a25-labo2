@@ -29,7 +29,15 @@ jobs:
           echo "REDIS_HOST=127.0.0.1" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "REDIS_DB=0" >> .env
+          
+      - name: Start services
+        run: |
+          docker-compose up -d mysql redis
 
       - name: Tests
         run: |
           cd src && python -m pytest tests/test_store_manager.py -q
+
+      - name: Stop services
+        run: |
+          docker-compose down -v
