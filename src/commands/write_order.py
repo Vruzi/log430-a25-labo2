@@ -8,16 +8,17 @@ from models.order_item import OrderItem
 from models.order import Order
 from queries.read_order import get_orders_from_mysql
 from db import get_sqlalchemy_session, get_redis_conn
+import json
 
 def add_order(user_id: int, items: list):
     """Insert order with items in MySQL, keep Redis in sync"""
     if not user_id or not items:
         raise ValueError("Vous devez indiquer au moins 1 utilisateur et 1 item pour chaque commande.")
-
     try:
         product_ids = []
         for item in items:
             product_ids.append(int(item['product_id']))
+
     except Exception as e:
         print(e)
         raise ValueError(f"L'ID Article n'est pas valide: {item['product_id']}")
@@ -100,25 +101,39 @@ def delete_order(order_id: int):
 def add_order_to_redis(order_id, user_id, total_amount, items):
     """Insert order to Redis"""
     r = get_redis_conn()
+    order_data = {
+        'id': order_id,
+        'user_id': user_id,
+        'total_amount': total_amount,
+        'items': items
+    }
+    r.set(f"order:{order_id}", json.dumps(order_data))
     print(r)
 
 def delete_order_from_redis(order_id):
     """Delete order from Redis"""
+    r = get_redis_conn()
+    r.delete(f"order:{order_id}")
     pass
 
 def sync_all_orders_to_redis():
     """ Sync orders from MySQL to Redis """
-    # redis
     r = get_redis_conn()
-    orders_in_redis = r.keys(f"order:*")
+    orders_in_redis = r.keys("order:*")
     rows_added = 0
     try:
         if len(orders_in_redis) == 0:
-            # mysql
-            orders_from_mysql = []
+            orders_from_mysql = get_orders_from_mysql()
+            
             for order in orders_from_mysql:
-                # TODO: terminez l'implementation
-                print(order)
+                # Convertir en dictionnaire simple
+                order_dict = {k: v for k, v in order.__dict__.items() 
+                             if not k.startswith('_')}
+                
+                # Stocker comme JSON string
+                r.set(f"order:{order_dict['id']}", json.dumps(order_dict))
+                print(f"Order {order_dict['id']} ajouté")
+                
             rows_added = len(orders_from_mysql)
         else:
             print('Redis already contains orders, no need to sync!')
