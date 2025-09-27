@@ -29,17 +29,10 @@ jobs:
           echo "REDIS_HOST=127.0.0.1" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "REDIS_DB=0" >> .env
-          
-      - name: Check available services
-        run: |
-          systemctl list-units --type=service | grep -E "(mysql|redis|mariadb)"
-          which redis-server || echo "Redis not found"
-          which mysql || echo "MySQL not found"
 
-      - name: Setup services and database
+      - name: Setup database
         run: |
-          sudo systemctl start mysql
-          sudo systemctl start redis-server
+          sudo systemctl start redis-server || echo "Redis already running"
           sudo mysql -e "CREATE USER IF NOT EXISTS 'labo02'@'127.0.0.1' IDENTIFIED BY 'labo02';"
           sudo mysql -e "CREATE USER IF NOT EXISTS 'labo02'@'localhost' IDENTIFIED BY 'labo02';"
           sudo mysql -e "CREATE DATABASE IF NOT EXISTS labo02_db;"
