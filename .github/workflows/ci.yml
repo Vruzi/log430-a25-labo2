@@ -41,9 +41,9 @@ jobs:
           sudo mysql -e "GRANT ALL PRIVILEGES ON labo02_db.* TO 'labo02'@'localhost';"
           sudo mysql -e "FLUSH PRIVILEGES;"
           
-          mysql -h 127.0.0.1 -u labo02 -plabo02 labo02_db -e "SET FOREIGN_KEY_CHECKS = 0;"
-          mysql -h 127.0.0.1 -u labo02 -plabo02 labo02_db < db-init/init.sql
-          mysql -h 127.0.0.1 -u labo02 -plabo02 labo02_db -e "SET FOREIGN_KEY_CHECKS = 1;"
+          MYSQL_PWD=labo02 mysql -h 127.0.0.1 -u labo02 -e "DROP DATABASE IF EXISTS labo02_db;"
+          MYSQL_PWD=labo02 mysql -h 127.0.0.1 -u labo02 -e "CREATE DATABASE labo02_db;"
+          MYSQL_PWD=labo02 mysql -h 127.0.0.1 -u labo02 labo02_db < db-init/init.sql
 
       - name: Tests
         run: |
