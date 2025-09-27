@@ -29,6 +29,12 @@ jobs:
           echo "REDIS_HOST=127.0.0.1" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "REDIS_DB=0" >> .env
+          
+      - name: Check available services
+        run: |
+          systemctl list-units --type=service | grep -E "(mysql|redis|mariadb)"
+          which redis-server || echo "Redis not found"
+          which mysql || echo "MySQL not found"
 
       - name: Setup services and database
         run: |
