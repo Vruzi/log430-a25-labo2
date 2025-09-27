@@ -43,4 +43,5 @@ jobs:
 
       - name: Tests
         run: |
+          export PYTHONPATH="${PYTHONPATH}:src"
           python -m pytest src/tests/test_store_manager.py -q
