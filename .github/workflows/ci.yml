@@ -21,15 +21,20 @@ jobs:
           
       - name: Creer fichier .env
         run: |
-          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_HOST=localhost" > .env
           echo "DB_PORT=3306" >> .env
-          echo "DB_NAME=labo02_db" >> .env
-          echo "DB_USER=labo02" >> .env
-          echo "DB_PASS=labo02" >> .env
-          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "DB_NAME=test" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASS=" >> .env
+          echo "REDIS_HOST=localhost" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "REDIS_DB=0" >> .env
 
+      - name: Setup database
+        run: |
+          mysql -u root -e "CREATE DATABASE IF NOT EXISTS test;"
+          mysql -u root test < db.init
+
       - name: Tests
         run: |
-          cd src && python -m pytest tests/test_store_manager.py -q
+          python -m pytest src/tests/test_store_manager.py -q
