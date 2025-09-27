@@ -18,7 +18,7 @@ def show_highest_spending_users():
         </tr>""" for i, user in enumerate(users)]
     
     return get_template(f"""
-        <h2>Top 10 - Plus Gros Acheteurs</h2>
+        <h2>Les plus gros acheteurs</h2>
         <p>Classement des utilisateurs ayant le plus dépensé :</p>
         <table class="table">
             <tr>
@@ -43,7 +43,7 @@ def show_best_sellers():
         </tr>""" for i, product in enumerate(products)]
     
     return get_template(f"""
-        <h2>Top 10 - Produits les Plus Vendus</h2>
+        <h2>Les articles les plus vendus</h2>
         <p>Classement des produits vendus en plus grande quantité :</p>
         <table class="table">
             <tr>
